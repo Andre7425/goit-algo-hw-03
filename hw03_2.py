@@ -1,75 +1,69 @@
 import turtle
 
 def koch_curve(t, order, size):
-    """
-    Рекурсивна функція для малювання однієї сторони кривої Коха.
-    """
+    """Рекурсивна функція для малювання однієї сторони."""
     if order == 0:
         t.forward(size)
     else:
-        # Стандартна формула розбиття лінії для кривої Коха
+        # Стандартна формула кривої Коха
         for angle in [60, -120, 60, 0]:
             koch_curve(t, order - 1, size / 3)
             t.left(angle)
 
-def draw_snowflake():
-    """
-    Ініціалізує вікно, запитує рівень рекурсії та малює сніжинку.
-    """
+def run_snowflake_app():
     window = turtle.Screen()
     window.bgcolor("black")
-    window.title("Фрактал 'Сніжинка Коха'")
-
-    # --- ДОДАНО: Запит рівня рекурсії у користувача ---
-    # minval=0 (мінімум), maxval=7 (максимум, бо більше 7 малюватиметься дуже довго)
-    order_input = window.numinput(
-        title="Налаштування", 
-        prompt="Введіть рівень рекурсії (0-6):", 
-        default=3, 
-        minval=0, 
-        maxval=7
-    )
-
-    # Якщо користувач натиснув Cancel, виходимо
-    if order_input is None:
-        print("Скасовано користувачем.")
-        return
-
-    order = int(order_input)
-    size = 400  # Розмір сніжинки
+    window.title("Восьмикутна Різдв'яна Сніжинка Коха")
 
     t = turtle.Turtle()
-    t.speed(0)  # Максимальна швидкість
-    t.hideturtle() # Ховаємо курсор черепашки
+    t.speed(0)
+    t.hideturtle()
     t.pensize(2)
-
-    # Позиціонування по центру екрану
-    t.penup()
-    t.goto(-size / 2, size / 3)
-    t.pendown()
-
-    # --- МАЛЮВАННЯ  ---
     
-    # 1 сторона (верхня - синя)
-    t.color("cyan")
-    koch_curve(t, order, size)
-    t.right(120)
+    #  розмір сторони, їх 8
+    size = 180  
 
-    # 2 сторона (права - жовта)
-    t.color("yellow")
-    koch_curve(t, order, size)
-    t.right(120)
+    while True:
+        order_input = window.numinput(
+            title="Налаштування",
+            prompt="Введіть рівень рекурсії (0-5):\n(Cancel для виходу)",
+            default=2,
+            minval=0,
+            maxval=5 # Для 8 сторін краще не ставити велику рекурсію, буде довго
+        )
 
-    # 3 сторона (ліва - жовта)
-    t.color("yellow")
-    koch_curve(t, order, size)
-    t.right(120)
+        if order_input is None:
+            print("Роботу завершено користувачем.")
+            break
+        
+        order = int(order_input)
+        t.clear()
+        
+        # --- Центрування для восьмикутника ---
+        # Потрібно піднятися вище і лівіше, щоб фігура була по центру
+        t.penup()
+        t.setheading(0)
+        t.goto(-size * 0.5, size * 1.3) 
+        t.pendown()
 
-    # Завершення: клік по екрану закриває вікно
-    window.exitonclick()
+        # --- МАЛЮВАННЯ 8 СТОРІН ---
+        sides = 8
+        angle = 360 / sides  # 360 / 8 = 45 градусів
+
+        for i in range(sides):
+            # Перші 4 сторони - сині, останні 4 - жовті
+            if i < 4:
+                t.color("cyan")
+            else:
+                t.color("yellow")
+            
+            koch_curve(t, order, size)
+            t.right(angle) # Поворот на 45 градусів
+
+    window.bye()
 
 if __name__ == "__main__":
     try:
-        draw_snowflake()
+        run_snowflake_app()
     except turtle.Terminator:
-        pass # Ігнорувати помилку при закритті вікна
+        pass
